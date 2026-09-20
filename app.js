@@ -10,6 +10,7 @@ const db = require('./config/db')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var uploadRouter = require('./routes/upload.router');
+var authRouter = require('./routes/auth.router');
 
 
 
@@ -35,6 +36,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', indexRouter);
 app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
+app.use('/auth', authRouter);
 
 
 

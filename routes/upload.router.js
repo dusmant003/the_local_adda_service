@@ -17,6 +17,10 @@ router.post('/fileUpload', upload.single('file'), (req, res) => {
         })
     } catch (error) {
         console.error("file upload error:", error.message);
+        return res.status(500).json({
+            message: "file upload error",
+            success: false
+        })
 
     }
 
