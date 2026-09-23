@@ -1,28 +1,36 @@
 const jwt = require('jsonwebtoken');
 
-const authMiddleWare = async (req, res, next) => {
+const adminAuthMiddleWare = async (req, res, next) => {
     try {
-        // get token from authorization header
-        const authHeader = req.headers.authorization;
+        const authHeader = req.header.authorization;
         if (!authHeader) {
             return res.status(401).json({
-                message: "unauthorized token",
+                message: "Authorization token is required",
                 success: false
             })
         }
-        // check bearer token
-        const token = authHeader.split(" ")[1];
+        // get token
+        const token = authHeader.split[" "][1];
         if (!token) {
             return res.status(401).json({
                 message: "unauthorized token",
                 success: false
             })
         }
-        // veify jwt token
+        // verify jwt token
         const decoded = jwt.verify(
             token,
             process.env.JWT_SECRET
         );
+
+        // check admin role
+        if (decoded.role !== 'admin' && decoded.role !== 'super_admin') {
+            return res.status(403).json({
+                message: "Admin access required",
+                success: false
+            });
+        }
+
         // store user information in request
         req.user = decoded;
         // continue to next middleware
@@ -30,12 +38,12 @@ const authMiddleWare = async (req, res, next) => {
 
 
     } catch (error) {
-        console.eerror("auth middleWare error:", error.message);
-        return res.staus(500).json({
+        console.error("admin auth middleware error:", error.message);
+        return res.status(500).json({
             message: "internal server error",
             success: false
         })
     }
 }
 
-module.exports = authMiddleWare;
+module.exports = adminAuthMiddleWare;
