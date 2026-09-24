@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-const adminAuthMiddleWare = async (req, res, next) => {
+const adminMiddleWare = async (req, res, next) => {
     try {
-        const authHeader = req.header.authorization;
+        const authHeader = req.headers.authorization;
         if (!authHeader) {
             return res.status(401).json({
                 message: "Authorization token is required",
@@ -10,7 +10,7 @@ const adminAuthMiddleWare = async (req, res, next) => {
             })
         }
         // get token
-        const token = authHeader.split[" "][1];
+        const token = authHeader.split(" ")[1];
         if (!token) {
             return res.status(401).json({
                 message: "unauthorized token",
@@ -46,4 +46,4 @@ const adminAuthMiddleWare = async (req, res, next) => {
     }
 }
 
-module.exports = adminAuthMiddleWare;
+module.exports = adminMiddleWare;

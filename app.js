@@ -12,6 +12,7 @@ var usersRouter = require('./routes/users');
 var uploadRouter = require('./routes/upload.router');
 var authRouter = require('./routes/auth.router');
 var adminRouter = require('./routes/admin.router');
+var categoryRouter = require('./routes/category.router');
 
 
 
@@ -39,6 +40,7 @@ app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
 app.use('/auth', authRouter);
 app.use('/admin', adminRouter);
+app.use('/category', categoryRouter);
 
 
 
