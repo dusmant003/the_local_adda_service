@@ -11,6 +11,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var uploadRouter = require('./routes/upload.router');
 var authRouter = require('./routes/auth.router');
+var adminRouter = require('./routes/admin.router');
 
 
 
@@ -37,6 +38,7 @@ app.use('/api', indexRouter);
 app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
 app.use('/auth', authRouter);
+app.use('/admin', adminRouter);
 
 
 
