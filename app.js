@@ -40,7 +40,7 @@ app.use('/users', usersRouter);
 app.use('/upload', uploadRouter);
 app.use('/auth', authRouter);
 app.use('/admin', adminRouter);
-app.use('/category', categoryRouter);
+app.use('/categories', categoryRouter);
 
 
 

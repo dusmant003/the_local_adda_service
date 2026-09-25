@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const upload = require('../middleWares/uploadMiddleware');
 
-const { upload } = require('../middleWares/uploadMiddleware');
 
 router.post('/fileUpload', upload.single('file'), (req, res) => {
     try {
