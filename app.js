@@ -13,6 +13,7 @@ var uploadRouter = require('./routes/upload.router');
 var authRouter = require('./routes/auth.router');
 var adminRouter = require('./routes/admin.router');
 var categoryRouter = require('./routes/category.router');
+var foodRouter = require('./routes/food.router');
 
 
 
@@ -41,6 +42,7 @@ app.use('/upload', uploadRouter);
 app.use('/auth', authRouter);
 app.use('/admin', adminRouter);
 app.use('/categories', categoryRouter);
+app.use('/foods', foodRouter);
 
 
 
