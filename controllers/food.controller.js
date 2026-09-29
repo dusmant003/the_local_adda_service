@@ -151,8 +151,174 @@ const getFoodById = async (req, res) => {
     }
 }
 
+// updateFood
+
+const updateFood = async (req, res) => {
+    try {
+
+        // Get food ID from URL
+        const { id } = req.params;
+
+        // Get updated food data
+        const {
+            category_id,
+            name,
+            description,
+            price
+        } = req.body;
+
+        console.log("category_id:", category_id);
+        // Get uploaded image
+        const image = req.file ? req.file.filename : null;
+
+
+        // Check if food exists
+        const food = await db.executeQuery(
+            `SELECT * FROM foods WHERE id = ?`,
+            [id]
+        );
+
+        if (food.length === 0) {
+            return res.status(404).json({
+                message: "Food not found",
+                success: false
+            });
+        }
+
+
+        // Check if category exists
+        const category = await db.executeQuery(
+            `SELECT id FROM categories WHERE id = ?`,
+            [category_id]
+        );
+
+        if (category.length === 0) {
+            return res.status(404).json({
+                message: "Category not found",
+                success: false
+            });
+        }
+
+        console.log("category result:", category);
+
+        // Check if food name already exists
+        const existingFood = await db.executeQuery(
+            `SELECT id FROM foods
+             WHERE name = ? AND id != ?`,
+            [name, id]
+        );
+
+        if (existingFood.length > 0) {
+            return res.status(409).json({
+                message: "Food name already exists",
+                success: false
+            });
+        }
+
+
+        // Update food
+        if (image) {
+
+            // Update with new image
+            await db.executeQuery(
+                `UPDATE foods
+                 SET category_id = ?,
+                     name = ?,
+                     description = ?,
+                     price = ?,
+                     image = ?
+                 WHERE id = ?`,
+                [
+                    category_id,
+                    name,
+                    description || null,
+                    price,
+                    image,
+                    id
+                ]
+            );
+
+        } else {
+
+            // Update without changing old image
+            await db.executeQuery(
+                `UPDATE foods
+                 SET category_id = ?,
+                     name = ?,
+                     description = ?,
+                     price = ?
+                 WHERE id = ?`,
+                [
+                    category_id,
+                    name,
+                    description || null,
+                    price,
+                    id
+                ]
+            );
+        }
+
+
+        // Success response
+        return res.status(200).json({
+            message: "Food updated successfully",
+            success: true
+        });
+
+    } catch (error) {
+
+        console.error("Update food error:", error);
+
+        return res.status(500).json({
+            message: "Internal server error",
+            success: false
+        });
+    }
+};
+
+// deleteFood
+const deleteFood = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // check if food is exists
+        const existingFood = await db.executeQuery(
+            `SELECT id FROM foods WHERE id = ?`,
+            [id]
+        )
+        if (existingFood.length === 0) {
+            return res.status(404).json({
+                message: "food not found",
+                success: false
+            })
+        }
+
+        // delete food from databse
+        await db.executeQuery(
+            `DELETE FROM foods WHERE id = ?`,
+            [id]
+        );
+
+        // success response
+        return res.status(200).json({
+            message: "food deleted successfully",
+            success: true
+        })
+
+
+    } catch (error) {
+        console.error("delete food error:", error);
+        return res.status(500).json({
+            message: "Internal server error",
+            success: false
+        })
+    }
+}
+
 module.exports = {
     createFood,
     getAllFood,
-    getFoodById
+    getFoodById,
+    updateFood,
+    deleteFood
 };
