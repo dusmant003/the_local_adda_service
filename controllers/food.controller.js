@@ -1,3 +1,4 @@
+const { Router } = require('express');
 const db = require('../config/db');
 
 
@@ -90,7 +91,68 @@ const createFood = async (req, res) => {
     }
 };
 
+// getAllFood
+const getAllFood = async (req, res) => {
+    try {
+        const result = await db.executeQuery(
+            `SELECT * FROM foods ORDER BY id DESC`
+        );
+        if (result && result.length > 0) {
+            return res.status(200).json({
+                message: "Foods fetched successfully",
+                success: false,
+                foods: result
+            })
+        } else {
+            return res.status(404).json({
+                message: "no foods found"
+            })
+        }
+
+    } catch (error) {
+        console.error("get all food error:", error.message);
+        return res.status(500).json({
+            message: "internal server error",
+            success: false
+        })
+    }
+}
+// getFoodById
+const getFoodById = async (req, res) => {
+    try {
+        // get food from url
+        const { id } = req.params;
+
+        // find food by id
+        const food = await db.executeQuery(
+            `SELECT * FROM foods WHERE id = ?`,
+            [id]
+        )
+        //    check if food exists
+        if (food.length === 0) {
+            return res.status(404).json({
+                message: "Food not found",
+                success: false
+            })
+        }
+        // success response
+        return res.status(200).json({
+            message: "food fetched successfully",
+            success: true,
+            food: food[0]
+        })
+
+    } catch (error) {
+        console.error("getFoodById error:", error.message);
+        return res.status(500).json({
+            message: "internal server error",
+            success: false
+        })
+    }
+}
 
 module.exports = {
-    createFood
+    createFood,
+    getAllFood,
+    getFoodById
 };
