@@ -94,29 +94,130 @@ const createFood = async (req, res) => {
 // getAllFood
 const getAllFood = async (req, res) => {
     try {
-        const result = await db.executeQuery(
-            `SELECT * FROM foods ORDER BY id DESC`
-        );
-        if (result && result.length > 0) {
-            return res.status(200).json({
-                message: "Foods fetched successfully",
-                success: false,
-                foods: result
-            })
+
+        // Get keyword and category_id from URL query parameters
+        //
+        // Example:
+        // /allFood?keyword=pizza&category_id=8
+        //
+        // keyword = "pizza"
+        // category_id = "8"
+        const { keyword, category_id } = req.query;
+
+
+        // Check what values are coming from the URL
+        console.log("keyword:", keyword);
+        console.log("category_id:", category_id);
+
+
+        // Create a variable to store the database result
+        let result;
+
+
+        // CASE 1:
+        // Both keyword and category_id are provided
+        //
+        // Example:
+        // /allFood?keyword=biriyani&category_id=8
+        //
+        // Find foods where:
+        // 1. category_id matches
+        // 2. food name contains the keyword
+        if (keyword && category_id) {
+
+            result = await db.executeQuery(
+                `SELECT * FROM foods
+                 WHERE category_id = ? AND name LIKE ?`,
+                [category_id, `%${keyword}%`]
+            );
+
+            console.log("filter foods:", result);
+
+
+            // CASE 2:
+            // Only category_id is provided
+            //
+            // Example:
+            // /allFood?category_id=8
+            //
+            // Get all foods from that category
+        } else if (category_id) {
+
+            result = await db.executeQuery(
+                `SELECT * FROM foods
+                 WHERE category_id = ?`,
+                [category_id]
+            );
+
+            console.log("category foods:", result);
+
+
+            // CASE 3:
+            // Only keyword is provided
+            //
+            // Example:
+            // /allFood?keyword=pizza
+            //
+            // Search food by name
+        } else if (keyword) {
+
+            result = await db.executeQuery(
+                `SELECT * FROM foods
+                 WHERE name LIKE ?`,
+                [`%${keyword}%`]
+            );
+
+            console.log("search foods:", result);
+
+
+            // CASE 4:
+            // Neither keyword nor category_id is provided
+            //
+            // Example:
+            // /allFood
+            //
+            // Get all foods
         } else {
-            return res.status(404).json({
-                message: "no foods found"
-            })
+
+            result = await db.executeQuery(
+                `SELECT * FROM foods ORDER BY id DESC`
+            );
+
+            console.log("all foods:", result);
         }
 
+
+        // Check whether any food was found
+        if (result && result.length > 0) {
+
+            // Send successful response with food data
+            return res.status(200).json({
+                message: "Foods fetched successfully",
+                success: true,
+                foods: result
+            });
+
+        } else {
+
+            // No matching food was found
+            return res.status(404).json({
+                message: "no foods found",
+                success: false
+            });
+        }
+
+
     } catch (error) {
+
+        // Handle database or other server errors
         console.error("get all food error:", error.message);
+
         return res.status(500).json({
             message: "internal server error",
             success: false
-        })
+        });
     }
-}
+};
 // getFoodById
 const getFoodById = async (req, res) => {
     try {
