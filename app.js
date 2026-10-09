@@ -14,6 +14,8 @@ var authRouter = require('./routes/auth.router');
 var adminRouter = require('./routes/admin.router');
 var categoryRouter = require('./routes/category.router');
 var foodRouter = require('./routes/food.router');
+var cartRouter = require('./routes/cart.router');
+var addressRouter = require('./routes/addressRoutes');
 
 
 
@@ -43,6 +45,8 @@ app.use('/auth', authRouter);
 app.use('/admin', adminRouter);
 app.use('/categories', categoryRouter);
 app.use('/foods', foodRouter);
+app.use('/cart', cartRouter);
+app.use('/address', addressRouter);
 
 
 
