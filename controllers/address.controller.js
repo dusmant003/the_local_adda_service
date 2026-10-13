@@ -229,6 +229,35 @@ const updateAddress = async (req, res) => {
 // DeleteAddress
 const DeleteAddress = async (req, res) => {
     try {
+        const { id } = req.params;
+        const user_id = req.user.id;
+
+        // check if address exists for logged-in user
+        const existingAddress = await db.executeQuery(
+            `SELECT * FROM addresses WHERE id = ? AND user_id = ?`,
+            [id, user_id]
+        );
+
+        if (existingAddress.length === 0) {
+            return res.status({
+                message: "address not found",
+                success: false
+            })
+        }
+
+        // delete address from database
+        await db.executeQuery(
+            `DELETE FROM addresses WHERE id = ? AND user_id = ?`,
+            [id, user_id]
+        )
+
+        // Return success response
+        return res.status(200).json({
+            message: "address deleted successfully",
+            success: true
+        });
+
+
 
     } catch (error) {
         console.error("delete address error:", error.message);
